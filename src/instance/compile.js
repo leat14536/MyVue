@@ -1,17 +1,25 @@
 /**
  * Created by Administrator on 2017/6/2 0002.
  */
+/*
+*   渲染节点
+* */
 exports._compile = function () {
-    this._compileNode(this.$el);
+    this.fragment = document.createDocumentFragment();
+    this._compileNode(this.$template);
+    this.$el.innerHTML = "";
+    this.fragment.childNodes.forEach((child) => {
+        this.$el.appendChild(child.cloneNode(true));
+    });
 };
 
 exports._compileNode = function (node) {
     switch (node.nodeType) {
-        // text
+        // node
         case 1:
             this._compileElement(node);
             break;
-        // node
+        // text
         case 3 :
             this._compileText(node);
             break;
@@ -21,6 +29,9 @@ exports._compileNode = function (node) {
 };
 
 exports._compileElement = function (node) {
+    this.currentNode = document.createElement(node.tagName);
+    this.fragment.appendChild(this.currentNode);
+
     if ( node.hasChildNodes()) {
         Array.from(node.childNodes).forEach(this._compileNode, this);
     }
@@ -33,6 +44,7 @@ exports._compileText = function (node) {
 
     let patt = /{{[\s\w]+}}/g;
     let ret = nodeValue.match(patt);
+
     if (!ret) return;
 
     ret.forEach((value) => {
@@ -40,7 +52,8 @@ exports._compileText = function (node) {
         nodeValue = nodeValue.replace(value, this.$data[property]);
     }, this);
 
-    node.nodeValue = nodeValue;
+    this.currentNode.appendChild(document.createTextNode(nodeValue));
+    //node.nodeValue = nodeValue;
 };
 
 
