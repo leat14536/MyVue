@@ -2,6 +2,8 @@
  * Created by Administrator on 2017/6/2 0002.
  */
 import arrayAugmentations from '../observer/array-augmentations';
+import objectAugmentations from '../observer/object-augmentations';
+import _ from '../util';
 
 const ARRAY = 0;
 const OBJECT = 1;
@@ -22,16 +24,18 @@ export default class Observer {
         this.value = value;
         // TODO 这里为什么enumerable一定要为false,否则会触发死循环
         // value.$observer = this;
-        Object.defineProperty(value, '$observer', {
+        /*Object.defineProperty(value, '$observer', {
             value: this,
             enumerable: false,
             writable: true,
             configurable: true
-        });
+        });*/
+        _.define(value, '$observer', this);
         if (type === ARRAY) {
             value.__proto__ = arrayAugmentations;
             this.link(value);
         } else if (type === OBJECT) {
+            value.__proto__ = objectAugmentations;
             this.walk(value);
         }
     }
@@ -80,6 +84,7 @@ Observer.prototype.convert = function (key, val) {
         enumerable: true,
         configurable: true,
         get: function () {
+            //console.log('get ')
             return val
         },
         set: function (newVal) {

@@ -4,13 +4,15 @@
 /*
 *   渲染节点
 * */
+let fragment, currentNodeList = [];
 exports._compile = function () {
-    this.fragment = document.createDocumentFragment();
+    fragment = document.createDocumentFragment();
+    currentNodeList.push(fragment);
+
     this._compileNode(this.$template);
-    this.$el.innerHTML = "";
-    this.fragment.childNodes.forEach((child) => {
-        this.$el.appendChild(child.cloneNode(true));
-    });
+
+    this.$el.parentNode.replaceChild(fragment,this.$el);
+    this.$el = document.querySelector(this.$options.el);
 };
 
 exports._compileNode = function (node) {
@@ -29,12 +31,23 @@ exports._compileNode = function (node) {
 };
 
 exports._compileElement = function (node) {
-    this.currentNode = document.createElement(node.tagName);
-    this.fragment.appendChild(this.currentNode);
+    let newNode = document.createElement(node.tagName);
 
-    if ( node.hasChildNodes()) {
+    if (node.hasAttributes()) {
+        let attrs = node.attributes;
+        Array.from(attrs).forEach((attr) => {
+            newNode.setAttribute(attr.name, attr.value);
+        });
+    }
+
+    let currentNode = currentNodeList[currentNodeList.length - 1].appendChild(newNode);
+
+    if (node.hasChildNodes()) {
+        currentNodeList.push(currentNode);
         Array.from(node.childNodes).forEach(this._compileNode, this);
     }
+
+    currentNodeList.pop();
 };
 
 exports._compileText = function (node) {
@@ -52,7 +65,8 @@ exports._compileText = function (node) {
         nodeValue = nodeValue.replace(value, this.$data[property]);
     }, this);
 
-    this.currentNode.appendChild(document.createTextNode(nodeValue));
+    currentNodeList[currentNodeList.length - 1].appendChild(document.createTextNode(nodeValue));
+    //this.currentNode.appendChild(document.createTextNode(nodeValue));
     //node.nodeValue = nodeValue;
 };
 

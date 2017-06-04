@@ -2,7 +2,7 @@
  * Created by Administrator on 2017/6/2 0002.
  */
 const aryMethods = ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'];
-export const arrayAugmentations = [];
+const arrayAugmentations = [];
 
 aryMethods.forEach((method) => {
     let original = Array.prototype[method];
@@ -12,3 +12,4 @@ aryMethods.forEach((method) => {
     };
 });
 
+export default arrayAugmentations;
