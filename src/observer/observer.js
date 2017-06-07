@@ -3,15 +3,12 @@
  */
 import arrayAugmentations from '../observer/array-augmentations';
 import objectAugmentations from '../observer/object-augmentations';
-import _ from '../util';
+import _ from '../util/index.js';
 
 const ARRAY = 0;
 const OBJECT = 1;
 
-/*
-*   数据绑定
-*   冒泡
-* */
+let uid = 0;
 
 /**
  * 观察者构造函数
@@ -22,15 +19,12 @@ const OBJECT = 1;
 export default class Observer {
     constructor (value, type) {
         this.value = value;
-        // TODO 这里为什么enumerable一定要为false,否则会触发死循环
-        // value.$observer = this;
-        /*Object.defineProperty(value, '$observer', {
-            value: this,
-            enumerable: false,
-            writable: true,
-            configurable: true
-        });*/
+        this.id = ++uid;
+
+        //这里enumerable一定要为false,否则会触发死循环, 原因未明
+        // 将当前对象存储到当前对象的$observer属性中
         _.define(value, '$observer', this);
+
         if (type === ARRAY) {
             value.__proto__ = arrayAugmentations;
             this.link(value);
@@ -54,6 +48,10 @@ Observer.create = function (value) {
     }
 };
 
+/**
+ * 遍历数据对象
+ * @param obj {Object} 待遍历的数据对象
+ */
 Observer.prototype.walk = function (obj) {
     let val;
     for (let key in obj) {
@@ -69,6 +67,13 @@ Observer.prototype.walk = function (obj) {
     }
 };
 
+/**
+ * 调用创建observer函数
+ * 并且判断是否有父节点,如果有,则存储父节点到自身,
+ * 目的是为了方便后面事件传播使用
+ * @param key {string} 键值
+ * @param val {Any} 属性值
+ */
 Observer.prototype.observe = function (key, val) {
     let ob = Observer.create(val);
     if (!ob) return;
@@ -78,20 +83,29 @@ Observer.prototype.observe = function (key, val) {
     }
 };
 
+/**
+ * 定义对象属性
+ * @param key {string} 属性键名
+ * @param val {Any} 属性值
+ */
 Observer.prototype.convert = function (key, val) {
     let ob = this;
     Object.defineProperty(this.value, key, {
         enumerable: true,
         configurable: true,
         get: function () {
-            //console.log('get ')
             return val
         },
         set: function (newVal) {
             if (newVal === val) return;
             val = newVal
-            ob.notify('set', key, newVal);
-            ob.notify(`set:${key}`, key, newVal)
+            var path = key;
+            while(this.$observer.parent){
+                path = this.$observer.parent.key+'.'+path;
+            }
+            debugger
+            ob.notify('set', path, newVal);
+            ob.notify(`set:${path}`, path, newVal)
         }
     })
 };
@@ -152,4 +166,39 @@ Observer.prototype.link = function (items) {
     items.forEach((value, index) => {
         this.observe(index, value);
     });
+};
+
+/**
+ * 取消订阅事件
+ * @param event {string} 事件类型
+ * @param fn {Function} 回调函数
+ * @returns {Observer} 观察者对象
+ */
+Observer.prototype.off = function (event, fn) {
+    this._cbs = this._cbs || {};
+
+    // 取消所有订阅事件
+    if (!arguments.length) {
+        this._cbs = {};
+        return this;
+    }
+
+    let callbacks = this._cbs[event];
+    if (!callbacks) return this;
+
+    // 取消特定事件
+    if (arguments.length === 1) {
+        delete this._cbs[event];
+        return this;
+    }
+
+    // 取消特定事件的特定回调函数
+    for (let i = 0, cb; i < callbacks.length; i++) {
+        cb = callbacks[i];
+        if (cb === fn) {
+            callbacks.splice(i, 1);
+            break;
+        }
+    }
+    return this;
 };

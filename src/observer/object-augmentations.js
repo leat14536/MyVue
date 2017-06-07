@@ -5,7 +5,7 @@
  * Created by youngwind on 16/8/30.
  */
 
-import _ from '../util';
+import _ from '../util/index';
 const objectAgumentations = {};
 
 /**

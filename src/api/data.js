@@ -1,8 +1,12 @@
 /**
  * Created by Administrator on 2017/6/2 0002.
  */
-exports.$watch = function (key, fn) {
-    let _fn = function () {
+import Watcher from '../watcher';
+
+
+exports.$watch = function (exp, cb) {
+    new Watcher(this, exp, cb, this);
+    /*let _fn = function () {
         fn(arguments[2]);
     };
 
@@ -17,7 +21,7 @@ exports.$watch = function (key, fn) {
         pathAry.forEach((property) => {
             _temp = _temp[property]
         });
-        _temp.$observer.on(`set:${lastProperty}`, _fn.bind(this));
-    }
+        _temp.$observer.on(`set:${lastProperty}`, _fn.bind(this));*/
+    //}
    //this.$data.$observer.on(`set:${key}`, _fn.bind(this))
 };
