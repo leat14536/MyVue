@@ -36,7 +36,7 @@ module.exports = {
             minify: {
                 removeComments: true,           //去除注释
                 collapseWhitespace: true,       //去除空格
-            }
+        }
         })
     ],
     devServer: {

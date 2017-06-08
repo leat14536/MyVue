@@ -11,11 +11,11 @@ import _ from '../util/index';
 
 exports._init = function(options){
 
-    debugger
     this.$options = options;
-
+    debugger
     // Bue构造函数上定义了一些指令相关的方法,需要将它们引用过来, 以供后面的调用
-    _.extend(this.$options, this.constructor.options);
+    Object.assign(this.$options, this.constructor.options);
+    console.log(this.$options);
 
     this.$data = options.data||{};
 

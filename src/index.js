@@ -9,7 +9,7 @@ import $watch from './api/data';
 import element from './instance/element';
 import observer from './observer/observer.js';
 import bindings from './instance/binding.js';
-import directives from './directive'
+import directives from './directive/index.js'
 
 (function(window) {
     function MyVue(options) {

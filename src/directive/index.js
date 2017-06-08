@@ -3,5 +3,5 @@
  */
 
 export default {
-    text: require('./text').update
+    text: require('./text')
 }

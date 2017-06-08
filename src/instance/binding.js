@@ -8,6 +8,7 @@ exports._updateBindingAt = function () {
     let pathAry = path.split('.');
     let r = this._rootBinding;
     pathAry.forEach((key) => {
+        console.log(r);
         r = r[key];
     });
 

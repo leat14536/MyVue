@@ -3,7 +3,6 @@
  */
 import Watcher from './watcher.js';
 import _ from './util';
-import update from './directive/index.js'
 
 /**
  * 指令构造函数
@@ -30,7 +29,8 @@ function Directive(name, el, vm, descriptor) {
  * 这里有点绕, 实际的函数请参考 /src/directives/text.js
  * @private
  */
-//暂时不知道什么时候用
+//从MyVue.options.directives中寻找text的update方法,并继承
+//MyVue.options 在'../index.js'中
 Directive.prototype._initDef = function () {
     let def = this.vm.$options.directives[this.name];
     _.extend(this, def);
@@ -64,7 +64,7 @@ Directive.prototype._bind = function () {
 Directive.prototype._update = function () {
     this.update();
 }
-Directive.prototype.update = function(){
+/*Directive.prototype.update = function(){
     update[this.name].call(this);
-}
+}*/
 export default Directive;

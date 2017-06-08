@@ -100,10 +100,14 @@ Observer.prototype.convert = function (key, val) {
             if (newVal === val) return;
             val = newVal
             var path = key;
-            while(this.$observer.parent){
-                path = this.$observer.parent.key+'.'+path;
-            }
+            var obs = this.$observer.parent;
+            console.log(this);
             debugger
+            while(obs){
+                path = obs.key+'.'+path;
+                obs = obs.ob.parent;
+            }
+            console.log(path);
             ob.notify('set', path, newVal);
             ob.notify(`set:${path}`, path, newVal)
         }

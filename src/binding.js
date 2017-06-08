@@ -2,6 +2,7 @@
  * Created by Administrator on 2017/6/4 0004.
  */
 function Binding() {
+    // 用来存放各种watcher实例
     this._subs = [];
 }
 
@@ -13,9 +14,7 @@ function Binding() {
  * @private
  */
 Binding.prototype._addChild = function (key, child) {
-    child = child || new Binding();
-    this[key] = child;
-    return child;
+    return this[key] || new Binding();
 };
 
 /**
