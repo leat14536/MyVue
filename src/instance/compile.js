@@ -81,7 +81,6 @@ exports._compileTextNode = function (node) {
  */
 //this指向vue
 exports._bindDirective = function (name, value, node) {
-    debugger
     let descriptors = dirParser.parse(value);
     let dirs = this._directives;
     descriptors.forEach((descriptor) => {

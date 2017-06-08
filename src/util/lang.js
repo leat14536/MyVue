@@ -16,7 +16,9 @@ exports.define = function (obj, key, val, enumerable) {
         configurable: true
     })
 };
-
+/*
+*   object.assign 可以替代
+* */
 exports.extend = function (to, from) {
     for(let key in from){
       to[key] = from[key];

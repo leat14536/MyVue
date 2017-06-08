@@ -12,7 +12,12 @@
  * @param ctx {Object} 回调函数执行上下文
  * @constructor
  */
+import Batcher from './batcher';
+let uid = 0;
+let batcher = new Batcher();
+
 function Watcher(vm, expression, cb,ctx) {
+    this.id = ++uid;
     this.vm = vm;
     this.expression = expression;
     this.cb = cb;
@@ -47,7 +52,7 @@ Watcher.prototype.addDep = function (path) {
  * 就是这么的。。复杂。。
  */
 Watcher.prototype.update = function () {
-    this.cb.call(this.ctx, arguments);
+    batcher.push(this);
 };
 
 export default Watcher;
